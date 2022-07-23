@@ -1,6 +1,8 @@
 import {
+    Location,
     Position,
     Range,
+    Selection,
     TextEditor,
     TextEditorDecorationType,
     window,
@@ -25,6 +27,7 @@ export default class Decorator {
 
     setTextEditor(editor: TextEditor | undefined) {
         this.textEditor = editor
+        this.hideEnvs()
     }
 
     hideEnvs() {
@@ -36,8 +39,7 @@ export default class Decorator {
 
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i)
-            console.log(line)
-            if (line.isEmptyOrWhitespace) continue
+            if (line.isEmptyOrWhitespace || !line.text.includes('=')) continue
             const startIndex = line.text.indexOf('=') + 1
             if (startIndex === -1) continue
             const range = new Range(
@@ -71,5 +73,16 @@ export default class Decorator {
             builder.replace(oldRange, content)
         })
         this.hideEnvs()
+    }
+
+    async insertIndex(index: number) {
+        if (!this.textEditor) return
+        await this.textEditor.edit((builder) => {
+            const prevLine = this.textEditor?.document.lineAt(index)
+            const prevLineEnd = prevLine?.range.end.character || 0
+            builder.insert(new Position(index, prevLineEnd), '\n')
+        })
+        const position = new Position(index + 1, 0)
+        this.textEditor.selection = new Selection(position, position)
     }
 }

@@ -17,12 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
     const decorator = new Decorator()
     const envLensProvider = new EnvLensProvider()
 
-    const debouncedHideEnv = debounce(() => decorator.hideEnvs(), 5000)
-
-    // Hide immediately on start up of a new window, still have some built-in lag as the extension loads in
+    // Set editor up for hiding on start up of a new window
+    // still have some built-in lag as the extension loads in
     const startUpEditor = vscode.window.activeTextEditor
     decorator.setTextEditor(startUpEditor)
-    decorator.hideEnvs()
 
     const toggleCommandDisposable = vscode.commands.registerCommand(
         'begone.toggleLine',
@@ -41,6 +39,14 @@ export function activate(context: vscode.ExtensionContext) {
         }
     )
 
+    const insertCommandDisposable = vscode.commands.registerCommand(
+        'begone.insertLine',
+        async (index: number) => {
+            if (index === undefined) return
+            decorator.insertIndex(index)
+        }
+    )
+
     const codeLensProviderDisposable =
         vscode.languages.registerCodeLensProvider(
             {
@@ -51,8 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.onDidChangeActiveTextEditor((editor) => {
         decorator.setTextEditor(editor)
-        decorator.hideEnvs()
     })
+
+    // Longer delay allow for better editing experience whereas shorter
+    // time allows for better hiding time on copy and paste events
+    // keeping things hidden at all times seem to be more important so going
+    // to keep the debounce time short
+    const debouncedHideEnv = debounce(() => decorator.hideEnvs(), 200)
 
     vscode.window.onDidChangeTextEditorSelection((e) => {
         debouncedHideEnv()
@@ -60,6 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(toggleCommandDisposable)
     context.subscriptions.push(pasteCommandDisposable)
+    context.subscriptions.push(insertCommandDisposable)
     context.subscriptions.push(codeLensProviderDisposable)
 }
 
