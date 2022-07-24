@@ -1,6 +1,7 @@
 import {
     Location,
     Position,
+    ProgressLocation,
     Range,
     Selection,
     TextEditor,
@@ -69,9 +70,21 @@ export default class Decorator {
     async pasteIndex(index: number, content: string) {
         if (!this.textEditor) return
         const oldRange = this.decorationArray[index]
-        await this.textEditor.edit((builder) => {
-            builder.replace(oldRange, content)
-        })
+        const line = this.textEditor.document.lineAt(index)
+        const variableName = line.text.slice(0, oldRange.start.character - 1)
+        try {
+            await this.textEditor.edit((builder) => {
+                builder.replace(oldRange, content)
+            })
+            const message = window.setStatusBarMessage(
+                `Pasted into ${variableName}`
+            )
+            setTimeout(() => {
+                message.dispose()
+            }, 5000)
+        } catch (error) {
+            window.showErrorMessage('Something went wrong...')
+        }
         this.hideEnvs()
     }
 
