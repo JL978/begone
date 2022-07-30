@@ -1,8 +1,15 @@
 {
 	"name": "begone",
-	"displayName": "begone",
+	"displayName": "BeGone",
+	"publisher": "LlamaDev",
 	"description": "Environment variables be gone! Hides your environment variables from unsuspecting viewers.",
-	"version": "0.0.1",
+	"author": {"name" : "jlamster"},
+	"icon": "assets/begone-icon.jpeg",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/JL978/begone.git"
+	},
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.69.0"
 	},
