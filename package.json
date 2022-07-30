@@ -28,17 +28,6 @@
 				"command": "begone.insertLine",
 				"title": "Insert Line"
 			}
-		],
-		"customEditors": [
-			{
-				"viewType": "begone.envBegone",
-				"displayName": "Be Gone Env",
-				"selector": [
-					{
-						"filenamePattern": "**/.env"
-					}
-				]
-			}
 		]
 	},
 	"scripts": {
