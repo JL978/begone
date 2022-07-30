@@ -16,10 +16,6 @@
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [
-		"onCommand:begone.helloWorld",
-		"*"
-	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
